@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Name Game</string>
+    <string name="loading_message">Loading....</string>
+    <string name="fragment_transition">transition</string>
+    <string name="question">Who is %s?</string>
+    <string name="cdFace">A face</string>
+    <string name="match_game">Match Game</string>
+    <string name="matt_game">Matt Game</string>
+    <string name="second_chance">Second Chance</string>
+    <string name="thanks_for_playing">Thanks for Playing!</string>
+    <string name="your_score">Your Score: %s</string>
+    <string name="high_score">High Score: %s</string>
+    <string name="clear_high_score">Clear the High Score</string>
+    <string name="play_again">Same Game</string>
+    <string name="correct">Correct</string>
+    <string name="incorrect">Incorrect</string>
+    <string name="try_again">Try Again</string>
+    <string name="choose_new_game">New Game</string>
+    <string name="all_done">All Done</string>
+    <string name="company_logo">company logo</string>
+
+</resources>
