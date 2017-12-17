@@ -12,16 +12,16 @@ import android.widget.TextView;
 import com.varcustom.namegame.R;
 import com.varcustom.namegame.model.GameData;
 
-public class GameModeChooserFragment extends Fragment {
+public class GameModeFragment extends Fragment {
 
     private TextView mMatchGame;
     private TextView mMattGame;
     private TextView mSecondChanceGame;
 
-    private GameModeChooserListener mGameModeChooserListener;
+    private GameModeListener mGameModeListener;
 
-    public static GameModeChooserFragment newInstance() {
-        GameModeChooserFragment fragment = new GameModeChooserFragment();
+    public static GameModeFragment newInstance() {
+        GameModeFragment fragment = new GameModeFragment();
 
         return fragment;
     }
@@ -30,10 +30,10 @@ public class GameModeChooserFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            mGameModeChooserListener = (GameModeChooserListener) context;
+            mGameModeListener = (GameModeListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement GameModeChooserListener");
+            throw new ClassCastException(String.format("%s must implement GameModeListener",
+                    context.toString()));
         }
     }
 
@@ -48,22 +48,29 @@ public class GameModeChooserFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_game_mode_chooser, container, false);
 
         mMatchGame = view.findViewById(R.id.match);
-        mMatchGame.setOnClickListener((View lambdaView) ->
-                mGameModeChooserListener.setGameMode(GameData.GameMode.NAME_GAME));
+        mMatchGame.setOnClickListener((View lambdaView) -> {
+            mGameModeListener.setGameMode(GameData.GameMode.NAME_GAME);
+            mGameModeListener.startNewGame();
+        });
 
         mMattGame = view.findViewById(R.id.matt);
-        mMattGame.setOnClickListener((View lambdaView) ->
-                mGameModeChooserListener.setGameMode(GameData.GameMode.MATT_GAME));
+        mMattGame.setOnClickListener((View lambdaView) -> {
+            mGameModeListener.setGameMode(GameData.GameMode.MATT_GAME);
+            mGameModeListener.startNewGame();
+        });
 
         mSecondChanceGame = view.findViewById(R.id.second_chance);
-        mSecondChanceGame.setOnClickListener((View lambdaView) ->
-                mGameModeChooserListener.setGameMode(GameData.GameMode.SECOND_CHANCE_GAME));
+        mSecondChanceGame.setOnClickListener((View lambdaView) -> {
+            mGameModeListener.setGameMode(GameData.GameMode.SECOND_CHANCE_GAME);
+            mGameModeListener.startNewGame();
+        });
 
         return view;
     }
 
-    interface GameModeChooserListener {
+    interface GameModeListener {
         void setGameMode(GameData.GameMode mode);
+        void startNewGame();
     }
 
 }

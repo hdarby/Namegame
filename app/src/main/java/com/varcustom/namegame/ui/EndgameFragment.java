@@ -36,8 +36,8 @@ public class EndgameFragment extends Fragment {
         try {
             mEndgameListener = (EndgameListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement EndgameListener");
+            throw new ClassCastException(String.format("%s must implement EndgameListener",
+                    context.toString()));
         }
     }
 
@@ -75,13 +75,15 @@ public class EndgameFragment extends Fragment {
     private void setScores() {
         Score s = mEndgameListener.getScore();
         Score hs = mEndgameListener.getHighScore();
-        String scoreString = "Score: " + s.getScoreAsPercentage() + "% (" + s.getScoreAsRatio() + ")";
+        String scoreString = String.format("Score: %s %% (%s)",
+                s.getScoreAsPercentage(), s.getScoreAsRatio());
 
         StringBuilder highScoreString = new StringBuilder("High Score: ");
         if (hs.getAttempts() == 0) {
             highScoreString.append("None");
         } else {
-            highScoreString.append(hs.getScoreAsPercentage() + "% (" + hs.getScoreAsRatio() + ")");
+            highScoreString.append(String.format("%s %% (%s)",
+                    hs.getScoreAsPercentage(), hs.getScoreAsRatio()));
         }
 
         mScore.setText(scoreString);

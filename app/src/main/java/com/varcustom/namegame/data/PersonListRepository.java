@@ -21,7 +21,7 @@ public class PersonListRepository {
     @NonNull
     private List<Listener> listeners = new ArrayList<>(1);
     @Nullable
-    private List<Person> mPeople;
+    private ArrayList<Person> mPeople;
 
     public PersonListRepository(@NonNull NameGameApi api, Listener... listeners) {
         this.api = api;
@@ -35,7 +35,7 @@ public class PersonListRepository {
         this.api.getPersonProfiles().enqueue(new Callback<List<Person>>() {
             @Override
             public void onResponse(Call<List<Person>> call, Response<List<Person>> response) {
-                mPeople = response.body();
+                mPeople = new ArrayList<Person>(response.body());
                 for (Listener listener : listeners) {
                     listener.onLoadFinished(mPeople);
                 }
@@ -64,7 +64,7 @@ public class PersonListRepository {
     }
 
     public interface Listener {
-        void onLoadFinished(@NonNull List<Person> people);
+        void onLoadFinished(@NonNull ArrayList<Person> people);
 
         void onError(@NonNull Throwable error);
     }

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context="com.varcustom.namegame.ui.GameModeChooserFragment">
+    tools:context="com.varcustom.namegame.ui.GameModeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

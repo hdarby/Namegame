@@ -31,25 +31,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class NamegameFragment extends Fragment {
+public class NameGameFragment extends Fragment {
 
     private static final String HTTP = "http:";
     private static final int MAX_QUESTIONS = 10;
 
     private TextView mScore;
     private TextView mQuestion;
-    private View mContainer;
     private List<FrameLayout> mFrames;
-    private List<ImageView> mFaces;
-    private List<Person> mEmployees;
+    private ArrayList<Person> mEmployees;
     private Person mAnswer;
-    private int computedHW;
-    private boolean secondChance;
+    private int mComputedHW;
+    private boolean mSecondChance;
 
-    private NamegameGameInstanceListener mNamegameGameInstanceListener;
+    private NameGameListener mNameGameListener;
 
-    public static NamegameFragment newInstance() {
-        NamegameFragment fragment = new NamegameFragment();
+    public static NameGameFragment newInstance() {
+        NameGameFragment fragment = new NameGameFragment();
 
         return fragment;
     }
@@ -58,11 +56,20 @@ public class NamegameFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            mNamegameGameInstanceListener = (NamegameGameInstanceListener) context;
+            mNameGameListener = (NameGameListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement NamegameGameInstanceListener");
+                    + " must implement NameGameListener");
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putParcelableArrayList("people", mEmployees);
+        savedInstanceState.putInt("computedHW", mComputedHW);
+        savedInstanceState.putBoolean("secondChance", mSecondChance);
     }
 
     @Override
@@ -71,54 +78,62 @@ public class NamegameFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_namegame, container, false);
 
         if (savedInstanceState != null) {
+            Log.d(getClass().getSimpleName(), "restoring savedInstanceState");
+
+            mEmployees = savedInstanceState.getParcelableArrayList("people");
+            mComputedHW = savedInstanceState.getInt("computedHW");
+            mSecondChance = savedInstanceState.getBoolean("secondChance");
+
         }
+        View containerView;
+        List<ImageView> faces;
 
         mScore = view.findViewById(R.id.score);
 
         mFrames = new ArrayList<>();
-        mFaces = new ArrayList<>();
+        faces = new ArrayList<>();
 
         mQuestion = view.findViewById(R.id.title);
-        mContainer = view.findViewById(R.id.face_container);
+        containerView = view.findViewById(R.id.face_container);
 
-        ArrayList views = getAllChildren(mContainer);
+        List views = getAllChildren(containerView);
         mFrames.add(0, view.findViewById(R.id.frame_one));
         mFrames.add(1, view.findViewById(R.id.frame_two));
         mFrames.add(2, view.findViewById(R.id.frame_three));
         mFrames.add(3, view.findViewById(R.id.frame_four));
         mFrames.add(4, view.findViewById(R.id.frame_five));
         mFrames.add(5, view.findViewById(R.id.frame_six));
-        mFaces.add(0, view.findViewById(R.id.face_one));
-        mFaces.add(1, view.findViewById(R.id.face_two));
-        mFaces.add(2, view.findViewById(R.id.face_three));
-        mFaces.add(3, view.findViewById(R.id.face_four));
-        mFaces.add(4, view.findViewById(R.id.face_five));
-        mFaces.add(5, view.findViewById(R.id.face_six));
+        faces.add(0, view.findViewById(R.id.face_one));
+        faces.add(1, view.findViewById(R.id.face_two));
+        faces.add(2, view.findViewById(R.id.face_three));
+        faces.add(3, view.findViewById(R.id.face_four));
+        faces.add(4, view.findViewById(R.id.face_five));
+        faces.add(5, view.findViewById(R.id.face_six));
 
-        for (int i = 0; i < mFaces.size(); i++) {
+        for (int i = 0; i < faces.size(); i++) {
             final int index = i;
-            mFaces.get(i).setOnClickListener((View lambdaView) -> {
-                Score s = mNamegameGameInstanceListener.getScore();
+            faces.get(i).setOnClickListener((View lambdaView) -> {
+                Score s = mNameGameListener.getScore();
 
-                if (checkSelection(mEmployees.get(index)) == true) {
+                if (checkSelection(mEmployees.get(index))) {
                     s.correctAnswer();
-                    mNamegameGameInstanceListener.showSnackbar(getResources().getString(R.string.correct));
+                    mNameGameListener.showSnackbar(getResources().getString(R.string.correct));
 
                 } else {
-                    if (mNamegameGameInstanceListener.getGameMode() == GameData.GameMode.SECOND_CHANCE_GAME) {
-                        if (secondChance == true) {
+                    if (mNameGameListener.getGameMode() == GameData.GameMode.SECOND_CHANCE_GAME) {
+                        if (mSecondChance) {
                             s.incorrectAnswer();
-                            mNamegameGameInstanceListener.showSnackbar(getResources().getString(R.string.incorrect));
+                            mNameGameListener.showSnackbar(getResources().getString(R.string.incorrect));
                         } else {
-                            secondChance = true;
-                            mNamegameGameInstanceListener.showSnackbar(getResources().getString(R.string.try_again));
+                            mSecondChance = true;
+                            mNameGameListener.showSnackbar(getResources().getString(R.string.try_again));
 
                             return;
                         }
 
                     } else {
                         s.incorrectAnswer();
-                        mNamegameGameInstanceListener.showSnackbar(getResources().getString(R.string.incorrect));
+                        mNameGameListener.showSnackbar(getResources().getString(R.string.incorrect));
                     }
                 }
 
@@ -168,15 +183,15 @@ public class NamegameFragment extends Fragment {
         float dpHeight = outMetrics.heightPixels / density;
         float dpWidth = outMetrics.widthPixels / density;
 
-        computedHW = (int) Ui.convertDpToPixel(Math.max(dpHeight, dpWidth) / 10, getContext());
+        mComputedHW = (int) Ui.convertDpToPixel(Math.max(dpHeight, dpWidth) / 10, getContext());
     }
 
     private void playRound() {
-        GameInstanceProvider data = mNamegameGameInstanceListener.getNewGameInstance();
+        GameInstanceProvider data = mNameGameListener.getNewGameInstance();
         data.init();
-        secondChance = false;
+        mSecondChance = false;
 
-        // First, pick an answer from the available people
+        // Pick an answer from the available people
         mEmployees = data.getPeople();
         mAnswer = GenericChooser.chooseOneFromList(mEmployees);
 
@@ -188,7 +203,7 @@ public class NamegameFragment extends Fragment {
     }
 
     private void roundOver() {
-        Score s = mNamegameGameInstanceListener.getScore();
+        Score s = mNameGameListener.getScore();
 
         if (s.getAttempts() < MAX_QUESTIONS) {
             playRound();
@@ -198,8 +213,8 @@ public class NamegameFragment extends Fragment {
     }
 
     private void endGame() {
-        mNamegameGameInstanceListener.updateHighScore(mNamegameGameInstanceListener.getScore());
-        mNamegameGameInstanceListener.gameOver();
+        mNameGameListener.updateHighScore(mNameGameListener.getScore());
+        mNameGameListener.gameOver();
     }
 
     private boolean checkSelection(@NonNull Person selection) {
@@ -210,9 +225,7 @@ public class NamegameFragment extends Fragment {
         for (int i = 0; i < frames.size(); i++) {
             final FrameLayout frame = frames.get(i);
 
-            // In FrameLayout:
-            // index 0 = ImageView,
-            // index 1 = ProgressView
+            // index 0:ImageView, index 1: ProgressView
             if (frame.getChildAt(0) != null) {
                 if (frame.getChildAt(0) instanceof ImageView) {
 
@@ -225,7 +238,7 @@ public class NamegameFragment extends Fragment {
                             progressBar.setVisibility(View.VISIBLE);
 
                             Picasso.with(getContext()).load(HTTP + people.get(i).getHeadshot().getUrl())
-                                    .resize(computedHW, computedHW)
+                                    .resize(mComputedHW, mComputedHW)
                                     .transform(new CircleBorderTransform())
                                     .into(face, new Callback() {
                                         @Override
@@ -249,42 +262,36 @@ public class NamegameFragment extends Fragment {
     }
 
     private void updateScore() {
-        Score s = mNamegameGameInstanceListener.getScore();
+        Score s = mNameGameListener.getScore();
 
         StringBuilder scoreString = new StringBuilder("Current Score: ");
         if (s.getAttempts() > 0) {
 
-            scoreString.append(s.getScoreAsPercentage() + "% (" + s.getScoreAsRatio() + ")");
+            scoreString.append(String.format("%s %% (%s)",s.getScoreAsPercentage(), s.getScoreAsRatio()));
         }
 
         mScore.setText(scoreString);
     }
 
-    private ArrayList<View> getAllChildren(@NonNull View v) {
-
-        if (!(v instanceof ViewGroup)) {
-            ArrayList<View> viewArrayList = new ArrayList<>();
-            viewArrayList.add(v);
-            return viewArrayList;
+    private List<View> getAllViews(View v) {
+        if (!(v instanceof ViewGroup) || ((ViewGroup) v).getChildCount() == 0)
+        { List<View> r = new ArrayList<>(); r.add(v); return r; }
+        else {
+            List<View> list = new ArrayList<>(); list.add(v);
+            int children = ((ViewGroup) v).getChildCount();
+            for (int i=0;i<children;++i) {
+                list.addAll(getAllViews(((ViewGroup) v).getChildAt(i)));
+            }
+            return list;
         }
-
-        ArrayList<View> result = new ArrayList<>();
-
-        ViewGroup viewGroup = (ViewGroup) v;
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-
-            View child = viewGroup.getChildAt(i);
-
-            ArrayList<View> viewArrayList = new ArrayList<>();
-            viewArrayList.add(v);
-            viewArrayList.addAll(getAllChildren(child));
-
-            result.addAll(viewArrayList);
-        }
-        return result;
+    }
+    private List<View> getAllChildren(View v) {
+        List<View> list = getAllViews(v);
+        list.remove(v);
+        return list;
     }
 
-    public interface NamegameGameInstanceListener {
+    public interface NameGameListener {
         GameInstanceProvider getNewGameInstance();
         GameData.GameMode getGameMode();
         void showSnackbar(String message);

@@ -1,14 +1,29 @@
 package com.varcustom.namegame.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by hdarby on 12/12/2017.
  */
 
-public class GameData {
+public class GameData implements Parcelable {
 
     public static final String MATCH_GAME = "Match Game";
     public static final String MATT_GAME = "Matt Game";
     public static final String SECOND_CHANCE_GAME = "Second Chance";
+
+    public static final Creator CREATOR = new Creator() {
+        public GameData createFromParcel(Parcel source) {
+            return new GameData(source);
+        }
+
+        @Override
+        public GameData[] newArray(int size) {
+            return new GameData[size];
+        }
+    };
+
     private GameMode mGameMode;
     private int mNumPeople;
     private String mGameName;
@@ -54,8 +69,34 @@ public class GameData {
     }
 
     public enum GameMode {
-        NAME_GAME,
-        MATT_GAME,
-        SECOND_CHANCE_GAME
+        NAME_GAME(1),
+        MATT_GAME(2),
+        SECOND_CHANCE_GAME(3);
+
+        private int mMode;
+
+        GameMode(int mode) {
+            mMode = mode;
+        }
+
+    }
+
+    public GameData(Parcel in) {
+        int mode = in.readInt();
+        mGameMode = GameMode.values()[mode];
+        mGameName = in.readString();
+        mNumPeople = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mGameMode.ordinal());
+        dest.writeString(mGameName);
+        dest.writeInt(mNumPeople);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

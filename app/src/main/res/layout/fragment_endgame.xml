@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context="com.varcustom.namegame.ui.GameModeChooserFragment">
+    tools:context="com.varcustom.namegame.ui.GameModeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:gravity="center"
             android:text="@string/thanks_for_playing"
             android:textColor="@color/colorAccent"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/your_score"
@@ -37,7 +37,7 @@
             android:gravity="center"
             android:text="@string/your_score"
             android:textColor="@color/colorAccent"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
 
         <TextView
@@ -51,7 +51,7 @@
             android:padding="5dp"
             android:text="@string/high_score"
             android:textColor="@color/colorAccent"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/clear_high_score"
@@ -65,7 +65,7 @@
             android:text="@string/clear_high_score"
             android:textAlignment="center"
             android:textColor="@color/colorAccent"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -89,7 +89,7 @@
                 android:text="@string/play_again"
                 android:textAlignment="center"
                 android:textColor="@color/colorAccent"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
             <View
                 android:layout_width="0dp"
@@ -107,7 +107,7 @@
                 android:text="@string/choose_new_game"
                 android:textAlignment="center"
                 android:textColor="@color/colorAccent"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
             <View
                 android:layout_width="0dp"
@@ -125,7 +125,7 @@
                 android:text="@string/all_done"
                 android:textAlignment="center"
                 android:textColor="@color/colorAccent"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
             <View
                 android:layout_width="0dp"
