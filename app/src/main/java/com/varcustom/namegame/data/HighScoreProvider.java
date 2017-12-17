@@ -15,22 +15,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class HighScoreProvider implements Parcelable {
 
-    private static final String NAMEGAME = "namegame";
-    private static final String ATTEMPTS = "attempts";
-    private static final String CORRECT = "correct";
-
-    private Score mHighScore;
-    //private Context mContext;
-
-    public HighScoreProvider(Context context) {
-        mHighScore = new Score(0, 0);
-        retrieveHighScore(context);
-    }
-
-    protected HighScoreProvider(Parcel in) {
-        mHighScore = in.readParcelable(Score.class.getClassLoader());
-    }
-
     public static final Creator<HighScoreProvider> CREATOR = new Creator<HighScoreProvider>() {
         @Override
         public HighScoreProvider createFromParcel(Parcel in) {
@@ -42,6 +26,20 @@ public class HighScoreProvider implements Parcelable {
             return new HighScoreProvider[size];
         }
     };
+    private static final String NAMEGAME = "namegame";
+    private static final String ATTEMPTS = "attempts";
+    private static final String CORRECT = "correct";
+    //private Context mContext;
+    private Score mHighScore;
+
+    public HighScoreProvider(Context context) {
+        mHighScore = new Score(0, 0);
+        retrieveHighScore(context);
+    }
+
+    protected HighScoreProvider(Parcel in) {
+        mHighScore = in.readParcelable(Score.class.getClassLoader());
+    }
 
     private void retrieveHighScore(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(NAMEGAME, MODE_PRIVATE);

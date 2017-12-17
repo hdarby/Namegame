@@ -44,13 +44,17 @@ public class Score implements Parcelable {
         return mAttempts;
     }
 
-    public void setAttempts(int attempts) { mAttempts = attempts; }
+    public void setAttempts(int attempts) {
+        mAttempts = attempts;
+    }
 
     public int getCorrect() {
         return mCorrect;
     }
 
-    public void setCorrect(int correct) { mCorrect = correct; }
+    public void setCorrect(int correct) {
+        mCorrect = correct;
+    }
 
     public String getScoreAsPercentage() {
         if (mAttempts != 0) {

@@ -267,24 +267,28 @@ public class NameGameFragment extends Fragment {
         StringBuilder scoreString = new StringBuilder("Current Score: ");
         if (s.getAttempts() > 0) {
 
-            scoreString.append(String.format("%s %% (%s)",s.getScoreAsPercentage(), s.getScoreAsRatio()));
+            scoreString.append(String.format("%s %% (%s)", s.getScoreAsPercentage(), s.getScoreAsRatio()));
         }
 
         mScore.setText(scoreString);
     }
 
     private List<View> getAllViews(View v) {
-        if (!(v instanceof ViewGroup) || ((ViewGroup) v).getChildCount() == 0)
-        { List<View> r = new ArrayList<>(); r.add(v); return r; }
-        else {
-            List<View> list = new ArrayList<>(); list.add(v);
+        if (!(v instanceof ViewGroup) || ((ViewGroup) v).getChildCount() == 0) {
+            List<View> r = new ArrayList<>();
+            r.add(v);
+            return r;
+        } else {
+            List<View> list = new ArrayList<>();
+            list.add(v);
             int children = ((ViewGroup) v).getChildCount();
-            for (int i=0;i<children;++i) {
+            for (int i = 0; i < children; ++i) {
                 list.addAll(getAllViews(((ViewGroup) v).getChildAt(i)));
             }
             return list;
         }
     }
+
     private List<View> getAllChildren(View v) {
         List<View> list = getAllViews(v);
         list.remove(v);
@@ -293,10 +297,15 @@ public class NameGameFragment extends Fragment {
 
     public interface NameGameListener {
         GameInstanceProvider getNewGameInstance();
+
         GameData.GameMode getGameMode();
+
         void showSnackbar(String message);
+
         Score getScore();
+
         void updateHighScore(@NonNull Score score);
+
         void gameOver();
     }
 }

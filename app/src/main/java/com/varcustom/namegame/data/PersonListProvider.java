@@ -10,7 +10,6 @@ import com.varcustom.namegame.model.Person;
 import com.varcustom.namegame.network.NameGameApi;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import retrofit2.Retrofit;
@@ -22,11 +21,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PersonListProvider implements Parcelable {
 
-    private Context mContext;
+    public static final Creator<PersonListProvider> CREATOR = new Creator<PersonListProvider>() {
+        @Override
+        public PersonListProvider createFromParcel(Parcel in) {
+            return new PersonListProvider(in);
+        }
 
+        @Override
+        public PersonListProvider[] newArray(int size) {
+            return new PersonListProvider[size];
+        }
+    };
+    private Context mContext;
     private PersonListRepository mPersonListRepository;
     private PersonListRepository.Listener mListener;
-
     private ArrayList<Person> mPeople;
     private boolean mLoaded;
 
@@ -59,18 +67,6 @@ public class PersonListProvider implements Parcelable {
         mPeople = in.createTypedArrayList(Person.CREATOR);
         mLoaded = in.readByte() != 0;
     }
-
-    public static final Creator<PersonListProvider> CREATOR = new Creator<PersonListProvider>() {
-        @Override
-        public PersonListProvider createFromParcel(Parcel in) {
-            return new PersonListProvider(in);
-        }
-
-        @Override
-        public PersonListProvider[] newArray(int size) {
-            return new PersonListProvider[size];
-        }
-    };
 
     public PersonListRepository getPersonListRepository() {
         return mPersonListRepository;

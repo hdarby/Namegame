@@ -45,7 +45,7 @@ public class GameModeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_game_mode_chooser, container, false);
+        View view = inflater.inflate(R.layout.fragment_game_mode_chooser, container, false);
 
         mMatchGame = view.findViewById(R.id.match);
         mMatchGame.setOnClickListener((View lambdaView) -> {
@@ -70,6 +70,7 @@ public class GameModeFragment extends Fragment {
 
     interface GameModeListener {
         void setGameMode(GameData.GameMode mode);
+
         void startNewGame();
     }
 

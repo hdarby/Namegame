@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -25,7 +24,6 @@ import com.varcustom.namegame.model.Person;
 import com.varcustom.namegame.model.Score;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class NameGameActivity extends AppCompatActivity implements
         GameModeFragment.GameModeListener,
@@ -47,6 +45,7 @@ public class NameGameActivity extends AppCompatActivity implements
     private FragmentManager mFragmentManager;
     private GameData mGameData;
     private Score mScore;
+    private boolean canStartNewGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +63,7 @@ public class NameGameActivity extends AppCompatActivity implements
             mGameInstanceProvider = savedInstanceState.getParcelable("gameInstance");
             mHighScoreProvider = savedInstanceState.getParcelable("highScore");
             mScore = savedInstanceState.getParcelable("score");
+            canStartNewGame = savedInstanceState.getBoolean("canStartNewGame");
         } else {
 
             mGameData = new GameData(GameData.GameMode.NAME_GAME);
@@ -71,6 +71,7 @@ public class NameGameActivity extends AppCompatActivity implements
             mPersonListProvider.getPersonListRepository().register(this);
             mHighScoreProvider = new HighScoreProvider(getApplicationContext());
             mScore = new Score(0, 0);
+            canStartNewGame = false;
 
             loadLoaderFragment();
         }
@@ -85,6 +86,7 @@ public class NameGameActivity extends AppCompatActivity implements
         outState.putParcelable("gameInstance", mGameInstanceProvider);
         outState.putParcelable("highScore", mHighScoreProvider);
         outState.putParcelable("score", mScore);
+        outState.putBoolean("canStartNewGame", canStartNewGame);
 
         if (getFragmentManager().findFragmentByTag(GAME_MODE_CHOOSER) != null) {
             Log.d("onSaveInstanceState", "saving " + GAME_MODE_CHOOSER);
@@ -112,26 +114,26 @@ public class NameGameActivity extends AppCompatActivity implements
     }
 
     private void restoreFragment(@NonNull Bundle savedInstanceState) {
-            //Restore the fragment's instance
-            if (getFragmentManager()
-                    .getFragment(savedInstanceState, GAME_MODE_CHOOSER) != null) {
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, getFragmentManager().findFragmentByTag(GAME_MODE_CHOOSER))
-                        .commit();
-            } else if (getFragmentManager()
-                    .getFragment(savedInstanceState, NAMEGAME) != null) {
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, getFragmentManager().findFragmentByTag(NAMEGAME))
-                        .commit();
-            } else if (getFragmentManager()
-                    .getFragment(savedInstanceState, ENDGAME) != null) {
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, getFragmentManager().findFragmentByTag(ENDGAME))
-                        .commit();
-            }
+        //Restore the fragment's instance
+        if (getFragmentManager()
+                .getFragment(savedInstanceState, GAME_MODE_CHOOSER) != null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, getFragmentManager().findFragmentByTag(GAME_MODE_CHOOSER))
+                    .commit();
+        } else if (getFragmentManager()
+                .getFragment(savedInstanceState, NAMEGAME) != null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, getFragmentManager().findFragmentByTag(NAMEGAME))
+                    .commit();
+        } else if (getFragmentManager()
+                .getFragment(savedInstanceState, ENDGAME) != null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, getFragmentManager().findFragmentByTag(ENDGAME))
+                    .commit();
+        }
     }
 
     @Override
@@ -141,12 +143,16 @@ public class NameGameActivity extends AppCompatActivity implements
         alertDialog.setTitle("Abort Game?")
                 .setMessage("What would you like to do?");
         alertDialog.setPositiveButton("Change Game Type", (dialog, which) -> loadGameChooserFragment());
-        alertDialog.setNeutralButton("Start Game Over", (dialog, which) -> startNewGame());
-        alertDialog.setNegativeButton("Quit Game", (dialog, which) -> allDone());
+        if (canStartNewGame) {
+            alertDialog.setNeutralButton("Start Game Over", (dialog, which) -> startNewGame());
+        }
+        alertDialog.setNegativeButton("Cancel", (dialog, which) -> {
+        });
         alertDialog.setIcon(android.R.drawable.ic_dialog_alert).show();
     }
 
     private void loadLoaderFragment() {
+        canStartNewGame = false;
         FragmentTransaction ft = mFragmentManager.beginTransaction();
         LoadingFragment fragment = LoadingFragment.newInstance();
         ft.replace(R.id.container, fragment, LOADER);
@@ -154,16 +160,19 @@ public class NameGameActivity extends AppCompatActivity implements
     }
 
     private void loadGameChooserFragment() {
+        canStartNewGame = false;
         GameModeFragment nextFragment = GameModeFragment.newInstance();
         performFragmentTransition(nextFragment, GAME_MODE_CHOOSER);
     }
 
     private void loadGameFragment() {
+        canStartNewGame = true;
         NameGameFragment nextFragment = NameGameFragment.newInstance();
         performFragmentTransition(nextFragment, NAMEGAME);
     }
 
     private void loadEndgameFragment() {
+        canStartNewGame = true;
         EndgameFragment nextFragment = EndgameFragment.newInstance();
         performFragmentTransition(nextFragment, ENDGAME);
     }
@@ -274,6 +283,13 @@ public class NameGameActivity extends AppCompatActivity implements
 
     @Override
     public void onError(@NonNull Throwable error) {
-        loadGameChooserFragment();
+
+        new AlertDialog.Builder(this)
+                .setTitle("Failed Load")
+                .setCancelable(false)
+                .setIcon(android.R.drawable.stat_sys_warning)
+                .setMessage("Unable to download game data")
+                .setPositiveButton("Exit", (dialog, which) -> finish())
+                .show();
     }
 }

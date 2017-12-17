@@ -27,6 +27,7 @@ public class GameData implements Parcelable {
     private GameMode mGameMode;
     private int mNumPeople;
     private String mGameName;
+
     public GameData(GameMode gameMode) {
         mGameMode = gameMode;
 
@@ -52,6 +53,13 @@ public class GameData implements Parcelable {
         }
     }
 
+    public GameData(Parcel in) {
+        int mode = in.readInt();
+        mGameMode = GameMode.values()[mode];
+        mGameName = in.readString();
+        mNumPeople = in.readInt();
+    }
+
     public GameMode getGameMode() {
         return mGameMode;
     }
@@ -68,6 +76,18 @@ public class GameData implements Parcelable {
         return mGameName;
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mGameMode.ordinal());
+        dest.writeString(mGameName);
+        dest.writeInt(mNumPeople);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     public enum GameMode {
         NAME_GAME(1),
         MATT_GAME(2),
@@ -79,24 +99,5 @@ public class GameData implements Parcelable {
             mMode = mode;
         }
 
-    }
-
-    public GameData(Parcel in) {
-        int mode = in.readInt();
-        mGameMode = GameMode.values()[mode];
-        mGameName = in.readString();
-        mNumPeople = in.readInt();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mGameMode.ordinal());
-        dest.writeString(mGameName);
-        dest.writeInt(mNumPeople);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 }

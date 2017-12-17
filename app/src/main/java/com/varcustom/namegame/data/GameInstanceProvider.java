@@ -9,7 +9,6 @@ import com.varcustom.namegame.model.GameData;
 import com.varcustom.namegame.model.Person;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +17,17 @@ import java.util.stream.Collectors;
 
 public class GameInstanceProvider implements Parcelable {
 
+    public static final Creator<GameInstanceProvider> CREATOR = new Creator<GameInstanceProvider>() {
+        @Override
+        public GameInstanceProvider createFromParcel(Parcel in) {
+            return new GameInstanceProvider(in);
+        }
+
+        @Override
+        public GameInstanceProvider[] newArray(int size) {
+            return new GameInstanceProvider[size];
+        }
+    };
     GameData mGameData;
     ArrayList<Person> mPeople;
     PersonListProvider mPersonListProvider;
@@ -34,18 +44,6 @@ public class GameInstanceProvider implements Parcelable {
         mPeople = in.createTypedArrayList(Person.CREATOR);
         mPersonListProvider = in.readParcelable(PersonListProvider.class.getClassLoader());
     }
-
-    public static final Creator<GameInstanceProvider> CREATOR = new Creator<GameInstanceProvider>() {
-        @Override
-        public GameInstanceProvider createFromParcel(Parcel in) {
-            return new GameInstanceProvider(in);
-        }
-
-        @Override
-        public GameInstanceProvider[] newArray(int size) {
-            return new GameInstanceProvider[size];
-        }
-    };
 
     public GameData getGameData() {
         return mGameData;

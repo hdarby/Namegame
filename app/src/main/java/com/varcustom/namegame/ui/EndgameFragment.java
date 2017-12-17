@@ -92,10 +92,15 @@ public class EndgameFragment extends Fragment {
 
     public interface EndgameListener {
         Score getScore();
+
         Score getHighScore();
+
         void clearHighScore();
+
         void playAgain();
+
         void chooseNewGameType();
+
         void allDone();
 
     }
